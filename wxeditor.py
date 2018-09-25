@@ -8,6 +8,11 @@ class WxEditor(wx.Frame):
         self.InitUI()
   
     def InitUI(self):
+        fonts = ['Times New Roman', 'Times', 'Courier', 'Courier New', 'Helvetica',
+                'Sans', 'verdana', 'utkal', 'aakar', 'Arial']
+
+        font_sizes = ['10','11','12','13','14','15','16','17','18']
+
         menubar = wx.MenuBar()
 
         filemenu = wx.Menu()
@@ -64,8 +69,26 @@ class WxEditor(wx.Frame):
 
         self.SetMenuBar(menubar)
 
+        self.ToolBar = self.CreateToolBar()
+        newt = self.ToolBar.AddTool(wx.ID_NEW,'',wx.Bitmap('toolicons/new.png'))
+        opent = self.ToolBar.AddTool(wx.ID_OPEN,'',wx.Bitmap('toolicons/open.png'))
+        savet = self.ToolBar.AddTool(wx.ID_SAVE,'',wx.Bitmap('toolicons/save.png'))
+        save_ast = self.ToolBar.AddTool(wx.ID_SAVEAS,'',wx.Bitmap('toolicons/save-as.png'))
+        self.ToolBar.AddSeparator()
+        font = wx.ComboBox(self.ToolBar,value='Times',choices=fonts,size=(150,-1),style=wx.CB_DROPDOWN)
+        self.ToolBar.AddControl(font)
+        fontsize = wx.ComboBox(self.ToolBar,value='10',choices=font_sizes,size=(50,-1),style=wx.CB_DROPDOWN)
+        self.ToolBar.AddControl(fontsize)
+        self.ToolBar.AddSeparator()
+        undot = self.ToolBar.AddTool(wx.ID_UNDO,'',wx.Bitmap('toolicons/undo.png'))
+        redot = self.ToolBar.AddTool(wx.ID_REDO,'',wx.Bitmap('toolicons/redo.png'))
+        cutt = self.ToolBar.AddTool(wx.ID_CUT,'',wx.Bitmap('toolicons/cut.png'))
+        copyt = self.ToolBar.AddTool(wx.ID_COPY,'',wx.Bitmap('toolicons/copy.png'))
+        pastet = self.ToolBar.AddTool(wx.ID_PASTE,'',wx.Bitmap('toolicons/paste.png'))
+        self.ToolBar.Realize()
+
         self.SetTitle('WxEditor') 
-        self.SetSize(500,500)   
+        self.SetSize(900,700)   
         self.Center()
 
 def main():
