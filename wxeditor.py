@@ -1,4 +1,5 @@
 import wx
+import wx.stc as stc
 
 MENU_ICON = 1
 
@@ -13,6 +14,7 @@ class WxEditor(wx.Frame):
 
         font_sizes = ['10','11','12','13','14','15','16','17','18']
 
+        # creating menubar
         menubar = wx.MenuBar()
 
         filemenu = wx.Menu()
@@ -69,6 +71,7 @@ class WxEditor(wx.Frame):
 
         self.SetMenuBar(menubar)
 
+        # creating toolbar
         self.ToolBar = self.CreateToolBar()
         newt = self.ToolBar.AddTool(wx.ID_NEW,'',wx.Bitmap('toolicons/new.png'))
         opent = self.ToolBar.AddTool(wx.ID_OPEN,'',wx.Bitmap('toolicons/open.png'))
@@ -86,6 +89,20 @@ class WxEditor(wx.Frame):
         copyt = self.ToolBar.AddTool(wx.ID_COPY,'',wx.Bitmap('toolicons/copy.png'))
         pastet = self.ToolBar.AddTool(wx.ID_PASTE,'',wx.Bitmap('toolicons/paste.png'))
         self.ToolBar.Realize()
+
+        # creating textarea
+        self.Text = stc.StyledTextCtrl(self,style=wx.TE_MULTILINE|wx.TE_WORDWRAP) 
+
+        # creating line number
+        self.Text.SetMarginType(1,stc.STC_MARGIN_NUMBER)
+
+        # set margin width
+        self.leftMarginWidth = 30
+        self.Text.SetMarginWidth(1,self.leftMarginWidth)
+
+        # creating status bar 
+        self.CreateStatusBar()
+        self.StatusBar.SetBackgroundColour((220,220,220))
 
         self.SetTitle('WxEditor') 
         self.SetSize(900,700)   
