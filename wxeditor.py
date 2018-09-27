@@ -1,16 +1,15 @@
 import wx
 import wx.stc as stc
 
-MENU_ICON = 1
-
 class WxEditor(wx.Frame):
     def __init__(self,*args,**kwargs):
         super(WxEditor,self).__init__(*args,**kwargs)
         self.InitUI()
   
     def InitUI(self):
-        fonts = ['Times New Roman', 'Times', 'Courier', 'Courier New', 'Helvetica',
-                'Sans', 'verdana', 'utkal', 'aakar', 'Arial']
+        fonts = ["Arial","Courier New","Consolas","Clarendon","Comic Sans Ms",
+                "MS Sans Serif","MS Serif","Times New Roman",
+                "Serif","Symbol","System","Verdana"]
 
         font_sizes = ['10','11','12','13','14','15','16','17','18']
 
@@ -20,56 +19,63 @@ class WxEditor(wx.Frame):
         filemenu = wx.Menu()
         menubar.Append(filemenu,'File')
 
-        newi = wx.MenuItem(filemenu,MENU_ICON,'New\tCtrl+N')
+        newi = wx.MenuItem(filemenu,1,'New\tCtrl+N')
         newi.SetBitmap(wx.Bitmap('menuicons/new.png'))
         filemenu.Append(newi)
         
-        openi = wx.MenuItem(filemenu,MENU_ICON,'Open\tCtrl+O')
+        openi = wx.MenuItem(filemenu,2,'Open\tCtrl+O')
         openi.SetBitmap(wx.Bitmap('menuicons/open.png'))
         filemenu.Append(openi)
 
         filemenu.AppendSeparator()
         
-        savei = wx.MenuItem(filemenu,MENU_ICON,'Save\tCtrl+S')
+        savei = wx.MenuItem(filemenu,3,'Save\tCtrl+S')
         savei.SetBitmap(wx.Bitmap('menuicons/save.png'))
         filemenu.Append(savei)
 
-        save_asi = wx.MenuItem(filemenu,MENU_ICON,'Save As\tCtrl+Shift+S')
+        save_asi = wx.MenuItem(filemenu,4,'Save As\tCtrl+Shift+S')
         save_asi.SetBitmap(wx.Bitmap('menuicons/save-as.png'))
         filemenu.Append(save_asi)
 
         filemenu.AppendSeparator()
         
-        exiti = wx.MenuItem(filemenu,MENU_ICON,'Exit\tAlt+F4')
+        exiti = wx.MenuItem(filemenu,5,'Exit\tAlt+F4')
         exiti.SetBitmap(wx.Bitmap('menuicons/exit.png'))
         filemenu.Append(exiti)
 
         editmenu = wx.Menu()
         menubar.Append(editmenu,'Edit')
 
-        undoi = wx.MenuItem(filemenu,MENU_ICON,'Undo\tCtrl+Z')
+        undoi = wx.MenuItem(filemenu,6,'Undo\tCtrl+Z')
         undoi.SetBitmap(wx.Bitmap('menuicons/undo.png'))
         editmenu.Append(undoi)
 
-        redoi = wx.MenuItem(filemenu,MENU_ICON,'Redo\tCtrl+Y')
+        redoi = wx.MenuItem(filemenu,7,'Redo\tCtrl+Y')
         redoi.SetBitmap(wx.Bitmap('menuicons/redo.png'))
         editmenu.Append(redoi)
 
         editmenu.AppendSeparator()
 
-        cuti = wx.MenuItem(filemenu,MENU_ICON,'Cut\tCtrl+X')
+        cuti = wx.MenuItem(filemenu,8,'Cut\tCtrl+X')
         cuti.SetBitmap(wx.Bitmap('menuicons/cut.png'))
         editmenu.Append(cuti)
 
-        copyi = wx.MenuItem(filemenu,MENU_ICON,'Copy\tCtrl+C')
+        copyi = wx.MenuItem(filemenu,9,'Copy\tCtrl+C')
         copyi.SetBitmap(wx.Bitmap('menuicons/copy.png'))
         editmenu.Append(copyi)
 
-        pastei = wx.MenuItem(filemenu,MENU_ICON,'Paste\tCtrl+V')
+        pastei = wx.MenuItem(filemenu,10,'Paste\tCtrl+V')
         pastei.SetBitmap(wx.Bitmap('menuicons/paste.png'))
         editmenu.Append(pastei)
 
         self.SetMenuBar(menubar)
+
+        # bind menu icons and functions
+        self.Bind(wx.EVT_MENU, self.undo, undoi)
+        self.Bind(wx.EVT_MENU, self.redo, redoi)
+        self.Bind(wx.EVT_MENU, self.cut, cuti)
+        self.Bind(wx.EVT_MENU, self.copy, copyi)
+        self.Bind(wx.EVT_MENU, self.paste, pastei)
 
         # creating toolbar
         self.ToolBar = self.CreateToolBar()
@@ -78,7 +84,7 @@ class WxEditor(wx.Frame):
         savet = self.ToolBar.AddTool(wx.ID_SAVE,'',wx.Bitmap('toolicons/save.png'))
         save_ast = self.ToolBar.AddTool(wx.ID_SAVEAS,'',wx.Bitmap('toolicons/save-as.png'))
         self.ToolBar.AddSeparator()
-        font = wx.ComboBox(self.ToolBar,value='Times',choices=fonts,size=(150,-1),style=wx.CB_DROPDOWN)
+        font = wx.ComboBox(self.ToolBar,value='Times New Roman',choices=fonts,size=(150,-1),style=wx.CB_DROPDOWN)
         self.ToolBar.AddControl(font)
         fontsize = wx.ComboBox(self.ToolBar,value='10',choices=font_sizes,size=(50,-1),style=wx.CB_DROPDOWN)
         self.ToolBar.AddControl(fontsize)
@@ -90,14 +96,24 @@ class WxEditor(wx.Frame):
         pastet = self.ToolBar.AddTool(wx.ID_PASTE,'',wx.Bitmap('toolicons/paste.png'))
         self.ToolBar.Realize()
 
+        # bind tool icons and functions
+        self.Bind(wx.EVT_MENU, self.undo, undot)
+        self.Bind(wx.EVT_MENU, self.redo, redot)
+        self.Bind(wx.EVT_MENU, self.cut, cutt)
+        self.Bind(wx.EVT_MENU, self.copy, copyt)
+        self.Bind(wx.EVT_MENU, self.paste, pastet)
+
         # creating textarea
         self.Text = stc.StyledTextCtrl(self,style=wx.TE_MULTILINE|wx.TE_WORDWRAP) 
 
         # creating line number
         self.Text.SetMarginType(1,stc.STC_MARGIN_NUMBER)
 
+        # set margin 10 pixels between line number and text
+        self.Text.SetMargins(10,0)
+
         # set margin width
-        self.leftMarginWidth = 30
+        self.leftMarginWidth = 35
         self.Text.SetMarginWidth(1,self.leftMarginWidth)
 
         # creating status bar 
@@ -108,6 +124,31 @@ class WxEditor(wx.Frame):
         self.SetSize(900,700)   
         self.Center()
 
+        # show line and column number
+        self.Text.Bind(wx.EVT_KEY_UP,self.status)
+        self.status(self)
+
+    def undo(self, e):
+        self.Text.Undo()
+
+    def redo(self, e):
+        self.Text.Redo()    
+
+    def cut(self, e):
+        self.Text.Cut()
+
+    def copy(self, e):
+        self.Text.Copy()
+
+    def paste(self, e):
+        self.Text.Paste()            
+
+    def status(self, e):
+        line = self.Text.GetCurrentLine()+1
+        column = self.Text.GetColumn(self.Text.GetCurrentPos())
+        stat = "Line %s, Column %s" % (line, column)
+        self.StatusBar.SetStatusText(stat,0)
+ 
 def main():
     app = wx.App()
     wxeditor = WxEditor(None)
