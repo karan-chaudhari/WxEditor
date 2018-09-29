@@ -1,5 +1,6 @@
 import wx
 import wx.stc as stc
+import os
 
 class WxEditor(wx.Frame):
     def __init__(self,*args,**kwargs):
@@ -70,7 +71,14 @@ class WxEditor(wx.Frame):
 
         self.SetMenuBar(menubar)
 
+        # current directory and file name
+        self.dirname = ''
+        self.filename = ''
+
         # bind menu icons and functions
+        self.Bind(wx.EVT_MENU, self.new, newi)
+        self.Bind(wx.EVT_MENU, self.open_file, openi)
+
         self.Bind(wx.EVT_MENU, self.undo, undoi)
         self.Bind(wx.EVT_MENU, self.redo, redoi)
         self.Bind(wx.EVT_MENU, self.cut, cuti)
@@ -97,6 +105,9 @@ class WxEditor(wx.Frame):
         self.ToolBar.Realize()
 
         # bind tool icons and functions
+        self.Bind(wx.EVT_MENU, self.new, newt)
+        self.Bind(wx.EVT_MENU, self.open_file, opent)
+
         self.Bind(wx.EVT_MENU, self.undo, undot)
         self.Bind(wx.EVT_MENU, self.redo, redot)
         self.Bind(wx.EVT_MENU, self.cut, cutt)
@@ -120,13 +131,35 @@ class WxEditor(wx.Frame):
         self.CreateStatusBar()
         self.StatusBar.SetBackgroundColour((220,220,220))
 
-        self.SetTitle('WxEditor') 
+        self.SetTitle("Untitled" + " - WxEditor") 
         self.SetSize(900,700)   
         self.Center()
 
         # show line and column number
         self.Text.Bind(wx.EVT_KEY_UP,self.status)
         self.status(self)
+
+    def new(self, e):
+        self.dirname = ''
+        self.Text.SetValue('')
+        self.SetTitle("Untitled" + " - WxEditor")
+
+    def open_file(self, e):
+        try:
+            dlg = wx.FileDialog(self,"Choose a file",self.dirname,"","*.*",wx.ID_OPEN)
+            if (dlg.ShowModal() == wx.ID_OK):
+                self.filename = dlg.GetFilename()
+                self.dirname = dlg.GetDirectory()
+                with open(os.path.join(self.dirname,self.filename),encoding='ANSI') as f:
+                    content = f.read()
+                    self.Text.SetValue(content)
+                    self.SetTitle(self.filename + " - WxEditor")
+                    f.close()
+            dlg.Destroy()        
+        except:
+            dlg = wx.MessageDialog(self,"Could not open the file","Error",wx.ICON_ERROR)            
+            dlg.ShowModal()
+            dlg.Destroy()
 
     def undo(self, e):
         self.Text.Undo()
