@@ -99,6 +99,7 @@ class WxEditor(wx.Frame):
         opent = self.ToolBar.AddTool(wx.ID_OPEN,'',wx.Bitmap('toolicons/open.png'),'Open')
         savet = self.ToolBar.AddTool(wx.ID_SAVE,'',wx.Bitmap('toolicons/save.png'),'Save')
         save_ast = self.ToolBar.AddTool(wx.ID_SAVEAS,'',wx.Bitmap('toolicons/save-as.png'),'Save As')
+        exitt = self.ToolBar.AddTool(wx.ID_EXIT,'',wx.Bitmap('toolicons/exit.png'),'Exit')
         self.ToolBar.AddSeparator()
         font = wx.ComboBox(self.ToolBar,value='Times New Roman',choices=fonts,size=(150,-1),style=wx.CB_DROPDOWN)
         self.ToolBar.AddControl(font)
@@ -118,6 +119,7 @@ class WxEditor(wx.Frame):
         self.Bind(wx.EVT_MENU, self.open_file, opent)
         self.Bind(wx.EVT_MENU, self.save, savet)
         self.Bind(wx.EVT_MENU, self.save_as, save_ast)
+        self.Bind(wx.EVT_MENU, self.exit, exitt)
 
         self.Bind(wx.EVT_MENU, self.undo, undot)
         self.Bind(wx.EVT_MENU, self.redo, redot)
@@ -173,7 +175,7 @@ class WxEditor(wx.Frame):
             dlg.ShowModal()
             dlg.Destroy()
 
-    def save(self, e):
+    def save(self, event=None):
         try:
             with open(os.path.join(self.dirname,self.filename),'w') as f:
                 f.write(self.Text.GetValue())
@@ -206,7 +208,17 @@ class WxEditor(wx.Frame):
             dlg.Destroy()            
 
     def exit(self, e):
-        self.Close(True)        
+        if self.Text.GetValue():
+            dlg = wx.MessageDialog(self,"Do you want to save the changes?","Save?",wx.YES_NO|wx.CANCEL|wx.ICON_QUESTION)
+            result = dlg.ShowModal()
+            if (result == wx.ID_YES):
+                self.save()
+                self.Close(True)     
+            elif (result == wx.ID_NO):
+                self.Close(True)      
+            dlg.Destroy()    
+        if not self.Text.GetValue():
+            self.Close(True)            
 
     def undo(self, e):
         self.Text.Undo()
