@@ -47,31 +47,37 @@ class WxEditor(wx.Frame):
         editmenu = wx.Menu()
         menubar.Append(editmenu,'Edit')
 
-        undoi = wx.MenuItem(filemenu,6,'Undo\tCtrl+Z','Undo')
+        undoi = wx.MenuItem(editmenu,6,'Undo\tCtrl+Z','Undo')
         undoi.SetBitmap(wx.Bitmap('menuicons/undo.png'))
         editmenu.Append(undoi)
 
-        redoi = wx.MenuItem(filemenu,7,'Redo\tCtrl+Y','Redo')
+        redoi = wx.MenuItem(editmenu,7,'Redo\tCtrl+Y','Redo')
         redoi.SetBitmap(wx.Bitmap('menuicons/redo.png'))
         editmenu.Append(redoi)
 
         editmenu.AppendSeparator()
 
-        cuti = wx.MenuItem(filemenu,8,'Cut\tCtrl+X','Cut')
+        cuti = wx.MenuItem(editmenu,8,'Cut\tCtrl+X','Cut')
         cuti.SetBitmap(wx.Bitmap('menuicons/cut.png'))
         editmenu.Append(cuti)
 
-        copyi = wx.MenuItem(filemenu,9,'Copy\tCtrl+C','Copy')
+        copyi = wx.MenuItem(editmenu,9,'Copy\tCtrl+C','Copy')
         copyi.SetBitmap(wx.Bitmap('menuicons/copy.png'))
         editmenu.Append(copyi)
 
-        pastei = wx.MenuItem(filemenu,10,'Paste\tCtrl+V','Paste')
+        pastei = wx.MenuItem(editmenu,10,'Paste\tCtrl+V','Paste')
         pastei.SetBitmap(wx.Bitmap('menuicons/paste.png'))
         editmenu.Append(pastei)
 
-        select_alli = wx.MenuItem(filemenu,11,'Select All\tCtrl+A','Select All')
+        editmenu.AppendSeparator()
+
+        select_alli = wx.MenuItem(editmenu,11,'Select All\tCtrl+A','Select All')
         select_alli.SetBitmap(wx.Bitmap('menuicons/select-all.png'))
         editmenu.Append(select_alli)
+
+        deletei = wx.MenuItem(editmenu,12,'Delete\tCtrl+D','Delete')
+        deletei.SetBitmap(wx.Bitmap('menuicons/delete.png'))
+        editmenu.Append(deletei)
 
         viewmenu = wx.Menu()
         menubar.Append(viewmenu,'View')
@@ -101,8 +107,9 @@ class WxEditor(wx.Frame):
         self.Bind(wx.EVT_MENU, self.copy, copyi)
         self.Bind(wx.EVT_MENU, self.paste, pastei)
         self.Bind(wx.EVT_MENU, self.select_all, select_alli)
+        self.Bind(wx.EVT_MENU, self.delete, deletei)
 
-        self.Bind(wx.EVT_MENU, self.shoe_hide_linenumber, self.linenumberi)
+        self.Bind(wx.EVT_MENU, self.show_hide_linenumber, self.linenumberi)
 
         # creating toolbar
         self.ToolBar = self.CreateToolBar()
@@ -122,7 +129,9 @@ class WxEditor(wx.Frame):
         cutt = self.ToolBar.AddTool(wx.ID_CUT,'',wx.Bitmap('toolicons/cut.png'),'Cut')
         copyt = self.ToolBar.AddTool(wx.ID_COPY,'',wx.Bitmap('toolicons/copy.png'),'Copy')
         pastet = self.ToolBar.AddTool(wx.ID_PASTE,'',wx.Bitmap('toolicons/paste.png'),'Paste')
+        self.ToolBar.AddSeparator()
         select_allt = self.ToolBar.AddTool(wx.ID_SELECTALL,'',wx.Bitmap('toolicons/select-all.png'),'Select All')
+        deletet = self.ToolBar.AddTool(wx.ID_DELETE,'',wx.Bitmap('toolicons/delete.png'),'Delete')
         self.ToolBar.Realize()
 
         # bind tool icons and functions
@@ -138,6 +147,7 @@ class WxEditor(wx.Frame):
         self.Bind(wx.EVT_MENU, self.copy, copyt)
         self.Bind(wx.EVT_MENU, self.paste, pastet)
         self.Bind(wx.EVT_MENU, self.select_all, select_allt)
+        self.Bind(wx.EVT_MENU, self.delete, deletet)
 
         # creating textarea
         self.Text = stc.StyledTextCtrl(self,style=wx.TE_MULTILINE|wx.TE_WORDWRAP) 
@@ -249,7 +259,10 @@ class WxEditor(wx.Frame):
     def select_all(self, e):
         self.Text.SelectAll()      
 
-    def shoe_hide_linenumber(self,e):
+    def delete(self, e):
+        self.Text.Clear()
+
+    def show_hide_linenumber(self,e):
         if self.linenumberi.IsChecked():
             self.Text.SetMarginWidth(1,self.leftMarginWidth)
             self.Text.SetMargins(10,0)
