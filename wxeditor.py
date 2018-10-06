@@ -73,11 +73,20 @@ class WxEditor(wx.Frame):
         select_alli.SetBitmap(wx.Bitmap('menuicons/select-all.png'))
         editmenu.Append(select_alli)
 
+        viewmenu = wx.Menu()
+        menubar.Append(viewmenu,'View')
+        self.linenumberi = viewmenu.Append(wx.ID_ANY,'Show/Hide Line Number','Show/Hide Line Number',wx.ITEM_CHECK)
+
+        viewmenu.Check(self.linenumberi.GetId(),True)
+
         self.SetMenuBar(menubar)
 
         # current directory and file name
         self.dirname = ''
         self.filename = ''
+
+        # show and hide line number
+        self.linenumberEnable = True
 
         # bind menu icons and functions
         self.Bind(wx.EVT_MENU, self.new, newi)
@@ -92,6 +101,8 @@ class WxEditor(wx.Frame):
         self.Bind(wx.EVT_MENU, self.copy, copyi)
         self.Bind(wx.EVT_MENU, self.paste, pastei)
         self.Bind(wx.EVT_MENU, self.select_all, select_alli)
+
+        self.Bind(wx.EVT_MENU, self.shoe_hide_linenumber, self.linenumberi)
 
         # creating toolbar
         self.ToolBar = self.CreateToolBar()
@@ -237,6 +248,16 @@ class WxEditor(wx.Frame):
 
     def select_all(self, e):
         self.Text.SelectAll()      
+
+    def shoe_hide_linenumber(self,e):
+        if self.linenumberi.IsChecked():
+            self.Text.SetMarginWidth(1,self.leftMarginWidth)
+            self.Text.SetMargins(10,0)
+            self.linenumberEnable = True
+        else:
+            self.Text.SetMarginWidth(1,0)
+            self.Text.SetMargins(0,0)
+            self.linenumberEnable = False    
 
     def status(self, e):
         line = self.Text.GetCurrentLine()+1
