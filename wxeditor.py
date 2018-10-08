@@ -79,6 +79,8 @@ class WxEditor(wx.Frame):
         deletei.SetBitmap(wx.Bitmap('menuicons/delete.png'))
         editmenu.Append(deletei)
 
+        go_to_linei = editmenu.Append(wx.ID_ANY,"Go To Line\tCtrl+G",'Go To Line')
+
         viewmenu = wx.Menu()
         menubar.Append(viewmenu,'View')
         self.linenumberi = viewmenu.Append(wx.ID_ANY,'Show/Hide Line Number','Show/Hide Line Number',wx.ITEM_CHECK)
@@ -108,6 +110,7 @@ class WxEditor(wx.Frame):
         self.Bind(wx.EVT_MENU, self.paste, pastei)
         self.Bind(wx.EVT_MENU, self.select_all, select_alli)
         self.Bind(wx.EVT_MENU, self.delete, deletei)
+        self.Bind(wx.EVT_MENU, self.go_to_line, go_to_linei)
 
         self.Bind(wx.EVT_MENU, self.show_hide_linenumber, self.linenumberi)
 
@@ -261,6 +264,17 @@ class WxEditor(wx.Frame):
 
     def delete(self, e):
         self.Text.Clear()
+
+    def go_to_line(self, e):
+        dlg = wx.TextEntryDialog(self,"Insert line number","Go To Line","",wx.TextEntryDialogStyle)
+        show_dlg = dlg.ShowModal() 
+        line_no = dlg.GetValue()
+        if show_dlg == wx.ID_OK:
+            if line_no.isdigit():
+                self.Text.GotoLine(int(line_no)-1)
+            else:
+                dlg_error = wx.MessageDialog(self,"Please enter line number","Error",wx.ICON_ERROR)
+                dlg_error.ShowModal()       
 
     def show_hide_linenumber(self,e):
         if self.linenumberi.IsChecked():
