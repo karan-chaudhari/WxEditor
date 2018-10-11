@@ -1,6 +1,6 @@
 import wx
 import wx.stc as stc
-import os
+import os, time
 
 class WxEditor(wx.Frame):
     def __init__(self,*args,**kwargs):
@@ -81,6 +81,8 @@ class WxEditor(wx.Frame):
 
         go_to_linei = editmenu.Append(wx.ID_ANY,"Go To Line\tCtrl+G",'Go To Line')
 
+        datei = editmenu.Append(wx.ID_ANY,"Date/Time\tF5","Date/Time")
+
         viewmenu = wx.Menu()
         menubar.Append(viewmenu,'View')
         self.linenumberi = viewmenu.Append(wx.ID_ANY,'Show/Hide Line Number','Show/Hide Line Number',wx.ITEM_CHECK)
@@ -111,6 +113,7 @@ class WxEditor(wx.Frame):
         self.Bind(wx.EVT_MENU, self.select_all, select_alli)
         self.Bind(wx.EVT_MENU, self.delete, deletei)
         self.Bind(wx.EVT_MENU, self.go_to_line, go_to_linei)
+        self.Bind(wx.EVT_MENU, self.date_time, datei)
 
         self.Bind(wx.EVT_MENU, self.show_hide_linenumber, self.linenumberi)
 
@@ -292,6 +295,10 @@ class WxEditor(wx.Frame):
                             break
                         if dlg.GetValue().isalnum():
                             dlg_error.ShowModal()    
+
+    def date_time(self,e):
+        date_time = time.strftime("%d %b %Y , %r ", time.localtime())
+        self.Text.SetValue(date_time)
 
     def show_hide_linenumber(self,e):
         if self.linenumberi.IsChecked():
