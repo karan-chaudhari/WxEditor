@@ -267,14 +267,31 @@ class WxEditor(wx.Frame):
 
     def go_to_line(self, e):
         dlg = wx.TextEntryDialog(self,"Insert line number","Go To Line","",wx.TextEntryDialogStyle)
-        show_dlg = dlg.ShowModal() 
-        line_no = dlg.GetValue()
-        if show_dlg == wx.ID_OK:
-            if line_no.isdigit():
-                self.Text.GotoLine(int(line_no)-1)
-            else:
+        if dlg.ShowModal()==wx.ID_OK:
+            if dlg.GetValue().isdigit():
+                self.Text.GotoLine(int(dlg.GetValue())-1)
+            elif dlg.GetValue().isalnum():
                 dlg_error = wx.MessageDialog(self,"Please enter line number","Error",wx.ICON_ERROR)
-                dlg_error.ShowModal()       
+                if dlg_error.ShowModal()==wx.ID_OK:
+                    while dlg.ShowModal()==wx.ID_OK:
+                        if not dlg.GetValue():
+                            dlg_error.ShowModal()
+                        if dlg.GetValue().isdigit():
+                            self.Text.GotoLine(int(dlg.GetValue())-1)
+                            break 
+                        if dlg.GetValue().isalnum():
+                            dlg_error.ShowModal()    
+            elif not dlg.GetValue():
+                dlg_error = wx.MessageDialog(self,"Please enter line number","Error",wx.ICON_ERROR)
+                if dlg_error.ShowModal()==wx.ID_OK:
+                    while dlg.ShowModal()==wx.ID_OK:
+                        if not dlg.GetValue():
+                            dlg_error.ShowModal()                
+                        if dlg.GetValue().isdigit():
+                            self.Text.GotoLine(int(dlg.GetValue())-1)
+                            break
+                        if dlg.GetValue().isalnum():
+                            dlg_error.ShowModal()    
 
     def show_hide_linenumber(self,e):
         if self.linenumberi.IsChecked():
