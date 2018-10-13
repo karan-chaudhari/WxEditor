@@ -1,5 +1,6 @@
 import wx
 import wx.stc as stc
+import wx.ribbon as RB
 import os, time
 
 class WxEditor(wx.Frame):
@@ -117,43 +118,66 @@ class WxEditor(wx.Frame):
 
         self.Bind(wx.EVT_MENU, self.show_hide_linenumber, self.linenumberi)
 
-        # creating toolbar
-        self.ToolBar = self.CreateToolBar()
-        newt = self.ToolBar.AddTool(wx.ID_NEW,'',wx.Bitmap('toolicons/new.png'),'New')
-        opent = self.ToolBar.AddTool(wx.ID_OPEN,'',wx.Bitmap('toolicons/open.png'),'Open')
-        savet = self.ToolBar.AddTool(wx.ID_SAVE,'',wx.Bitmap('toolicons/save.png'),'Save')
-        save_ast = self.ToolBar.AddTool(wx.ID_SAVEAS,'',wx.Bitmap('toolicons/save-as.png'),'Save As')
-        exitt = self.ToolBar.AddTool(wx.ID_EXIT,'',wx.Bitmap('toolicons/exit.png'),'Exit')
-        self.ToolBar.AddSeparator()
-        font = wx.ComboBox(self.ToolBar,value='Times New Roman',choices=fonts,size=(150,-1),style=wx.CB_DROPDOWN)
-        self.ToolBar.AddControl(font)
-        fontsize = wx.ComboBox(self.ToolBar,value='10',choices=font_sizes,size=(50,-1),style=wx.CB_DROPDOWN)
-        self.ToolBar.AddControl(fontsize)
-        self.ToolBar.AddSeparator()
-        undot = self.ToolBar.AddTool(wx.ID_UNDO,'',wx.Bitmap('toolicons/undo.png'),'Undo')
-        redot = self.ToolBar.AddTool(wx.ID_REDO,'',wx.Bitmap('toolicons/redo.png'),'Redo')
-        cutt = self.ToolBar.AddTool(wx.ID_CUT,'',wx.Bitmap('toolicons/cut.png'),'Cut')
-        copyt = self.ToolBar.AddTool(wx.ID_COPY,'',wx.Bitmap('toolicons/copy.png'),'Copy')
-        pastet = self.ToolBar.AddTool(wx.ID_PASTE,'',wx.Bitmap('toolicons/paste.png'),'Paste')
-        self.ToolBar.AddSeparator()
-        select_allt = self.ToolBar.AddTool(wx.ID_SELECTALL,'',wx.Bitmap('toolicons/select-all.png'),'Select All')
-        deletet = self.ToolBar.AddTool(wx.ID_DELETE,'',wx.Bitmap('toolicons/delete.png'),'Delete')
-        self.ToolBar.Realize()
+        # creating ribbon toolbar
+        self.ribbon = RB.RibbonBar(self, wx.ID_ANY)
+
+        home = RB.RibbonPage(self.ribbon, wx.ID_ANY, "",wx.ArtProvider.GetBitmap(wx.ART_FILE_OPEN))
+        file_panel = RB.RibbonPanel(home,wx.ID_ANY,"File",wx.NullBitmap,wx.DefaultPosition,wx.DefaultSize,RB.RIBBON_PANEL_DEFAULT_STYLE)
+        ToolBar = RB.RibbonToolBar(file_panel, wx.ID_ANY)
+        
+        ToolBar.AddTool(wx.ID_NEW,wx.Bitmap('toolicons/new.png'),help_string='New')
+        ToolBar.AddTool(wx.ID_OPEN,wx.Bitmap('toolicons/open.png'),help_string='Open')
+        ToolBar.AddSeparator()
+        ToolBar.AddTool(wx.ID_SAVE,wx.Bitmap('toolicons/save.png'),help_string='Save')
+        ToolBar.AddTool(wx.ID_SAVEAS,wx.Bitmap('toolicons/save-as.png'),help_string='Save As')
+        ToolBar.AddSeparator()
+        ToolBar.AddTool(wx.ID_EXIT,wx.Bitmap('toolicons/exit.png'),help_string='Exit')
+
+        sizer_panel = RB.RibbonPanel(home,wx.ID_ANY,"Panel & Sizer")
+
+        comboBox_1 = wx.ComboBox(sizer_panel,wx.ID_ANY,"",wx.DefaultPosition,wx.DefaultSize,fonts,wx.CB_READONLY)
+        comboBox_2 = wx.ComboBox(sizer_panel,wx.ID_ANY,"",wx.DefaultPosition,wx.DefaultSize,font_sizes,wx.CB_READONLY)
+
+        comboBox_1.Select(7)
+        comboBox_2.Select(0)
+
+        comboBox_1.SetMinSize(wx.Size(150,-1))
+        comboBox_2.SetMinSize(wx.Size(150,-1))
+
+        combobox = wx.BoxSizer(wx.VERTICAL)
+        combobox.Add(comboBox_1,0,wx.ALL|wx.EXPAND,3)
+        combobox.Add(comboBox_2,0,wx.ALL|wx.EXPAND,3)
+        sizer_panel.SetSizer(combobox)
+
+        edit_panel = RB.RibbonPanel(home,wx.ID_ANY,"Edit",wx.NullBitmap,wx.DefaultPosition,wx.DefaultSize,RB.RIBBON_PANEL_DEFAULT_STYLE)
+        ToolBar = RB.RibbonToolBar(edit_panel, wx.ID_ANY)
+
+        ToolBar.AddTool(wx.ID_UNDO,wx.Bitmap('toolicons/undo.png'),help_string='Undo')
+        ToolBar.AddTool(wx.ID_REDO,wx.Bitmap('toolicons/redo.png'),help_string='Redo')
+        ToolBar.AddSeparator()
+        ToolBar.AddTool(wx.ID_CUT,wx.Bitmap('toolicons/cut.png'),help_string='Cut')
+        ToolBar.AddTool(wx.ID_COPY,wx.Bitmap('toolicons/copy.png'),help_string='Copy')
+        ToolBar.AddTool(wx.ID_PASTE,wx.Bitmap('toolicons/paste.png'),help_string='Paste')
+        ToolBar.AddSeparator()
+        ToolBar.AddTool(wx.ID_SELECTALL,wx.Bitmap('toolicons/select-all.png'),help_string='Select All')
+        ToolBar.AddTool(wx.ID_DELETE,wx.Bitmap('toolicons/delete.png'),help_string='Delete')
+        
+        self.ribbon.Realize()
 
         # bind tool icons and functions
-        self.Bind(wx.EVT_MENU, self.new, newt)
-        self.Bind(wx.EVT_MENU, self.open_file, opent)
-        self.Bind(wx.EVT_MENU, self.save, savet)
-        self.Bind(wx.EVT_MENU, self.save_as, save_ast)
-        self.Bind(wx.EVT_MENU, self.exit, exitt)
+        self.Bind(RB.EVT_RIBBONTOOLBAR_CLICKED, self.new, id=wx.ID_NEW)
+        self.Bind(RB.EVT_RIBBONTOOLBAR_CLICKED, self.open_file, id=wx.ID_OPEN)
+        self.Bind(RB.EVT_RIBBONTOOLBAR_CLICKED, self.save, id=wx.ID_SAVE)
+        self.Bind(RB.EVT_RIBBONTOOLBAR_CLICKED, self.save_as, id=wx.ID_SAVEAS)
+        self.Bind(RB.EVT_RIBBONTOOLBAR_CLICKED, self.exit, id=wx.ID_EXIT)
 
-        self.Bind(wx.EVT_MENU, self.undo, undot)
-        self.Bind(wx.EVT_MENU, self.redo, redot)
-        self.Bind(wx.EVT_MENU, self.cut, cutt)
-        self.Bind(wx.EVT_MENU, self.copy, copyt)
-        self.Bind(wx.EVT_MENU, self.paste, pastet)
-        self.Bind(wx.EVT_MENU, self.select_all, select_allt)
-        self.Bind(wx.EVT_MENU, self.delete, deletet)
+        self.Bind(RB.EVT_RIBBONTOOLBAR_CLICKED, self.undo, id=wx.ID_UNDO)
+        self.Bind(RB.EVT_RIBBONTOOLBAR_CLICKED, self.redo, id=wx.ID_REDO)
+        self.Bind(RB.EVT_RIBBONTOOLBAR_CLICKED, self.cut, id=wx.ID_CUT)
+        self.Bind(RB.EVT_RIBBONTOOLBAR_CLICKED, self.copy, id=wx.ID_COPY)
+        self.Bind(RB.EVT_RIBBONTOOLBAR_CLICKED, self.paste, id=wx.ID_PASTE)
+        self.Bind(RB.EVT_RIBBONTOOLBAR_CLICKED, self.select_all, id=wx.ID_SELECTALL)
+        self.Bind(RB.EVT_RIBBONTOOLBAR_CLICKED, self.delete, id=wx.ID_DELETE)
 
         # creating textarea
         self.Text = stc.StyledTextCtrl(self,style=wx.TE_MULTILINE|wx.TE_WORDWRAP) 
@@ -175,6 +199,11 @@ class WxEditor(wx.Frame):
         self.SetTitle("Untitled - WxEditor") 
         self.SetSize(900,700)   
         self.Center()
+
+        ribbonBox = wx.BoxSizer(wx.VERTICAL)
+        ribbonBox.Add(self.ribbon, 0, wx.EXPAND)
+        ribbonBox.Add(self.Text, 1, wx.EXPAND)
+        self.SetSizer(ribbonBox)
 
         # show line and column number
         self.Text.Bind(wx.EVT_KEY_UP,self.status)
