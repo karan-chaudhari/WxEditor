@@ -164,7 +164,7 @@ class WxEditor(wx.Frame):
         
         self.ribbon.Realize()
 
-        # bind tool icons and functions
+        # bind ribbon toolbar icons and functions
         self.Bind(RB.EVT_RIBBONTOOLBAR_CLICKED, self.new, id=wx.ID_NEW)
         self.Bind(RB.EVT_RIBBONTOOLBAR_CLICKED, self.open_file, id=wx.ID_OPEN)
         self.Bind(RB.EVT_RIBBONTOOLBAR_CLICKED, self.save, id=wx.ID_SAVE)
@@ -200,6 +200,7 @@ class WxEditor(wx.Frame):
         self.SetSize(900,700)   
         self.Center()
 
+        # attach ribbon panel with ribbon page 
         ribbonBox = wx.BoxSizer(wx.VERTICAL)
         ribbonBox.Add(self.ribbon, 0, wx.EXPAND)
         ribbonBox.Add(self.Text, 1, wx.EXPAND)
@@ -327,7 +328,7 @@ class WxEditor(wx.Frame):
 
     def date_time(self,e):
         date_time = time.strftime("%d %b %Y , %r ", time.localtime())
-        self.Text.SetValue(date_time)
+        self.Text.AddText(date_time)
 
     def show_hide_linenumber(self,e):
         if self.linenumberi.IsChecked():
