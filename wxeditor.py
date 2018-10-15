@@ -87,8 +87,10 @@ class WxEditor(wx.Frame):
         viewmenu = wx.Menu()
         menubar.Append(viewmenu,'View')
         self.linenumberi = viewmenu.Append(wx.ID_ANY,'Show/Hide Line Number','Show/Hide Line Number',wx.ITEM_CHECK)
+        self.statusbari = viewmenu.Append(wx.ID_ANY,'Show/Hide Status Bar','Show/Hide Status Bar',wx.ITEM_CHECK)
 
         viewmenu.Check(self.linenumberi.GetId(),True)
+        viewmenu.Check(self.statusbari.GetId(),True)
 
         self.SetMenuBar(menubar)
 
@@ -117,6 +119,7 @@ class WxEditor(wx.Frame):
         self.Bind(wx.EVT_MENU, self.date_time, datei)
 
         self.Bind(wx.EVT_MENU, self.show_hide_linenumber, self.linenumberi)
+        self.Bind(wx.EVT_MENU, self.show_hide_statusbar, self.statusbari)
 
         # creating ribbon toolbar
         self.ribbon = RB.RibbonBar(self, wx.ID_ANY)
@@ -133,7 +136,7 @@ class WxEditor(wx.Frame):
         ToolBar.AddSeparator()
         ToolBar.AddTool(wx.ID_EXIT,wx.Bitmap('toolicons/exit.png'),help_string='Exit')
 
-        sizer_panel = RB.RibbonPanel(home,wx.ID_ANY,"Panel & Sizer")
+        sizer_panel = RB.RibbonPanel(home,wx.ID_ANY,"Font Sizer")
 
         comboBox_1 = wx.ComboBox(sizer_panel,wx.ID_ANY,"",wx.DefaultPosition,wx.DefaultSize,fonts,wx.CB_READONLY)
         comboBox_2 = wx.ComboBox(sizer_panel,wx.ID_ANY,"",wx.DefaultPosition,wx.DefaultSize,font_sizes,wx.CB_READONLY)
@@ -180,7 +183,10 @@ class WxEditor(wx.Frame):
         self.Bind(RB.EVT_RIBBONTOOLBAR_CLICKED, self.delete, id=wx.ID_DELETE)
 
         # creating textarea
-        self.Text = stc.StyledTextCtrl(self,style=wx.TE_MULTILINE|wx.TE_WORDWRAP) 
+        self.Text = stc.StyledTextCtrl(self,style=wx.TE_MULTILINE|wx.TE_WORDWRAP)
+
+        # Hide horizontal scrollbar
+        self.Text.SetUseHorizontalScrollBar(show=0) 
 
         # creating line number
         self.Text.SetMarginType(1,stc.STC_MARGIN_NUMBER)
@@ -197,7 +203,8 @@ class WxEditor(wx.Frame):
         self.StatusBar.SetBackgroundColour((220,220,220))
 
         self.SetTitle("Untitled - WxEditor") 
-        self.SetSize(900,700)   
+        self.Maximize(True)
+        self.SetSize(900,700)
         self.Center()
 
         # attach ribbon panel with ribbon page 
@@ -339,6 +346,13 @@ class WxEditor(wx.Frame):
             self.Text.SetMarginWidth(1,0)
             self.Text.SetMargins(0,0)
             self.linenumberEnable = False    
+
+    def show_hide_statusbar(self,e):
+        if self.statusbari.IsChecked():
+            self.CreateStatusBar()
+            self.status(self)
+        else:
+            self.StatusBar.Destroy()    
 
     def status(self, e):
         line = self.Text.GetCurrentLine()+1
