@@ -82,6 +82,10 @@ class WxEditor(wx.Frame):
 
         go_to_linei = editmenu.Append(wx.ID_ANY,"Go To Line\tCtrl+G",'Go To Line')
 
+        findi = wx.MenuItem(editmenu,13,'Find\tCtrl+F','Find')
+        findi.SetBitmap(wx.Bitmap('menuicons/find.png'))
+        editmenu.Append(findi)
+
         datei = editmenu.Append(wx.ID_ANY,"Date/Time\tF5","Date/Time")
 
         viewmenu = wx.Menu()
@@ -97,6 +101,10 @@ class WxEditor(wx.Frame):
         # current directory and file name
         self.dirname = ''
         self.filename = ''
+
+        # set Default pos and size
+        self.pos = 0
+        self.size = 0
 
         # show and hide line number
         self.linenumberEnable = True
@@ -116,7 +124,10 @@ class WxEditor(wx.Frame):
         self.Bind(wx.EVT_MENU, self.select_all, select_alli)
         self.Bind(wx.EVT_MENU, self.delete, deletei)
         self.Bind(wx.EVT_MENU, self.go_to_line, go_to_linei)
+        self.Bind(wx.EVT_MENU, self.find_button, findi)
         self.Bind(wx.EVT_MENU, self.date_time, datei)
+
+        self.Bind(wx.EVT_FIND, self.find)
 
         self.Bind(wx.EVT_MENU, self.show_hide_linenumber, self.linenumberi)
         self.Bind(wx.EVT_MENU, self.show_hide_statusbar, self.statusbari)
@@ -164,7 +175,8 @@ class WxEditor(wx.Frame):
         ToolBar.AddSeparator()
         ToolBar.AddTool(wx.ID_SELECTALL,wx.Bitmap('toolicons/select-all.png'),help_string='Select All')
         ToolBar.AddTool(wx.ID_DELETE,wx.Bitmap('toolicons/delete.png'),help_string='Delete')
-        
+        ToolBar.AddTool(wx.ID_FIND,wx.Bitmap('toolicons/find.png'),help_string='Find')
+
         self.ribbon.Realize()
 
         # bind ribbon toolbar icons and functions
@@ -181,6 +193,7 @@ class WxEditor(wx.Frame):
         self.Bind(RB.EVT_RIBBONTOOLBAR_CLICKED, self.paste, id=wx.ID_PASTE)
         self.Bind(RB.EVT_RIBBONTOOLBAR_CLICKED, self.select_all, id=wx.ID_SELECTALL)
         self.Bind(RB.EVT_RIBBONTOOLBAR_CLICKED, self.delete, id=wx.ID_DELETE)
+        self.Bind(RB.EVT_RIBBONTOOLBAR_CLICKED, self.find_button, id=wx.ID_FIND)
 
         # creating textarea
         self.Text = stc.StyledTextCtrl(self,style=wx.TE_MULTILINE|wx.TE_WORDWRAP)
@@ -332,6 +345,27 @@ class WxEditor(wx.Frame):
                             break
                         if dlg.GetValue().isalnum():
                             dlg_error.ShowModal()    
+
+    def find_button(self,e):
+        self.txt = self.Text.GetValue()
+        self.Data = wx.FindReplaceData()
+        dlg = wx.FindReplaceDialog(self.Text,self.Data,'Find')
+        dlg.Show()
+
+    def find(self,e):
+        self.Text.StartStyling(pos=0,mask=0xFF)
+        self.Text.SetStyling(length=len(self.txt),style=0)
+        find_text = e.GetFindString()
+        self.size = len(find_text)
+        while True:
+            self.pos = self.txt.find(find_text,self.pos)
+            if self.pos < 0:
+                break
+            self.Text.StyleSetSpec(1,'fore:#000000,back:#C0C0C0')
+            self.Text.StartStyling(pos=self.pos,mask=0xFF)
+            self.Text.SetStyling(length=self.size,style=1)
+            self.pos += 1
+        self.pos = 0    
 
     def date_time(self,e):
         date_time = time.strftime("%d %b %Y , %r ", time.localtime())
