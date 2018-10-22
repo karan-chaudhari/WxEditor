@@ -86,6 +86,10 @@ class WxEditor(wx.Frame):
         findi.SetBitmap(wx.Bitmap('menuicons/find.png'))
         editmenu.Append(findi)
 
+        replacei = wx.MenuItem(editmenu,14,'Replace\tCtrl+H','Replace')
+        replacei.SetBitmap(wx.Bitmap('menuicons/replace.png'))
+        editmenu.Append(replacei)
+
         datei = editmenu.Append(wx.ID_ANY,"Date/Time\tF5","Date/Time")
 
         viewmenu = wx.Menu()
@@ -131,9 +135,12 @@ class WxEditor(wx.Frame):
         self.Bind(wx.EVT_MENU, self.delete, deletei)
         self.Bind(wx.EVT_MENU, self.go_to_line, go_to_linei)
         self.Bind(wx.EVT_MENU, self.find_button, findi)
+        self.Bind(wx.EVT_MENU, self.replace_button, replacei)
         self.Bind(wx.EVT_MENU, self.date_time, datei)
 
         self.Bind(wx.EVT_FIND, self.find)
+        self.Bind(wx.EVT_FIND_REPLACE, self.replace)
+        self.Bind(wx.EVT_FIND_REPLACE_ALL, self.replace_all)
 
         self.Bind(wx.EVT_MENU, self.show_hide_linenumber, self.linenumberi)
         self.Bind(wx.EVT_MENU, self.show_hide_statusbar, self.statusbari)
@@ -184,7 +191,9 @@ class WxEditor(wx.Frame):
         ToolBar.AddSeparator()
         ToolBar.AddTool(wx.ID_SELECTALL,wx.Bitmap('toolicons/select-all.png'),help_string='Select All')
         ToolBar.AddTool(wx.ID_DELETE,wx.Bitmap('toolicons/delete.png'),help_string='Delete')
+        ToolBar.AddSeparator()
         ToolBar.AddTool(wx.ID_FIND,wx.Bitmap('toolicons/find.png'),help_string='Find')
+        ToolBar.AddTool(wx.ID_REPLACE,wx.Bitmap('toolicons/replace.png'),help_string='Replace')
 
         self.ribbon.Realize()
 
@@ -203,6 +212,7 @@ class WxEditor(wx.Frame):
         self.Bind(RB.EVT_RIBBONTOOLBAR_CLICKED, self.select_all, id=wx.ID_SELECTALL)
         self.Bind(RB.EVT_RIBBONTOOLBAR_CLICKED, self.delete, id=wx.ID_DELETE)
         self.Bind(RB.EVT_RIBBONTOOLBAR_CLICKED, self.find_button, id=wx.ID_FIND)
+        self.Bind(RB.EVT_RIBBONTOOLBAR_CLICKED, self.replace_button, id=wx.ID_REPLACE)
 
         # creating textarea
         self.Text = stc.StyledTextCtrl(self,style=wx.TE_MULTILINE|wx.TE_WORDWRAP)
@@ -375,6 +385,47 @@ class WxEditor(wx.Frame):
             self.Text.SetStyling(length=self.size,style=1)
             self.pos += 1
         self.pos = 0    
+
+    def replace_button(self,e):
+        self.txt = self.Text.GetValue()
+        self.data = wx.FindReplaceData()
+        dlg = wx.FindReplaceDialog(self.Text,self.data,'Find & Replace',style=wx.FR_REPLACEDIALOG)
+        dlg.Show()    
+
+    def find_mode(self):
+        ret = 0
+        if self.data.GetFlags() & wx.FR_WHOLEWORD:
+            ret = ret | wx.stc.STC_FIND_WHOLEWORD
+        elif self.data.GetFlags() & wx.FR_MATCHCASE:
+            ret = ret | wx.stc.STC_FIND_MATCHCASE
+        return ret        
+
+    def replace(self,e):
+        find_text = e.GetFindString()
+        replace_text = e.GetReplaceString()
+        mode = self.find_mode()
+        start, end = 0, self.Text.GetLength()
+        length = len(find_text)
+        start = int(self.Text.FindText(start,end,find_text,mode))
+        self.Text.SetTargetStart(start)
+        self.Text.SetTargetEnd(start+length)
+        self.Text.ReplaceTarget(replace_text)
+
+    def replace_all(self,e):
+        find_text = e.GetFindString()
+        replace_text = e.GetReplaceString()
+        mode = self.find_mode()
+        start, end = 0, self.Text.GetLength()
+        length = len(find_text)
+        while True:
+            start = int(self.Text.FindText(start,end,find_text,mode))
+            if start < 0:
+                break
+            self.Text.SetTargetStart(start)
+            self.Text.SetTargetEnd(start+length)
+            self.Text.ReplaceTarget(replace_text)    
+            start += len(replace_text)
+            end += len(replace_text)
 
     def date_time(self,e):
         date_time = time.strftime("%d %b %Y , %r ", time.localtime())
