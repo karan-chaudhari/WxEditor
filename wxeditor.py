@@ -96,6 +96,12 @@ class WxEditor(wx.Frame):
         viewmenu.Check(self.linenumberi.GetId(),True)
         viewmenu.Check(self.statusbari.GetId(),True)
 
+        fontmenu = wx.Menu()
+        menubar.Append(fontmenu,'Font')
+
+        uppercasei = fontmenu.Append(wx.ID_ANY,'Upper Case','Upper Case')
+        lowercasei = fontmenu.Append(wx.ID_ANY,'Lower Case','Lower Case')
+
         self.SetMenuBar(menubar)
 
         # current directory and file name
@@ -131,6 +137,9 @@ class WxEditor(wx.Frame):
 
         self.Bind(wx.EVT_MENU, self.show_hide_linenumber, self.linenumberi)
         self.Bind(wx.EVT_MENU, self.show_hide_statusbar, self.statusbari)
+
+        self.Bind(wx.EVT_MENU, self.uppercase, uppercasei)
+        self.Bind(wx.EVT_MENU, self.lowercase, lowercasei)
 
         # creating ribbon toolbar
         self.ribbon = RB.RibbonBar(self, wx.ID_ANY)
@@ -387,6 +396,12 @@ class WxEditor(wx.Frame):
             self.status(self)
         else:
             self.StatusBar.Destroy()    
+
+    def uppercase(self,e):
+        self.Text.UpperCase()        
+
+    def lowercase(self,e):
+        self.Text.LowerCase()
 
     def status(self, e):
         line = self.Text.GetCurrentLine()+1
