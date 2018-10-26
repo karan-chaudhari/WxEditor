@@ -82,6 +82,8 @@ class WxEditor(wx.Frame):
 
         go_to_linei = editmenu.Append(wx.ID_ANY,"Go To Line\tCtrl+G",'Go To Line')
 
+        editmenu.AppendSeparator()
+
         findi = wx.MenuItem(editmenu,13,'Find\tCtrl+F','Find')
         findi.SetBitmap(wx.Bitmap('menuicons/find.png'))
         editmenu.Append(findi)
@@ -103,6 +105,9 @@ class WxEditor(wx.Frame):
         fontmenu = wx.Menu()
         menubar.Append(fontmenu,'Font')
 
+        self.boldi = fontmenu.Append(wx.ID_ANY,'Bold\tCtrl+B','Bold',wx.ITEM_CHECK)
+        self.italici = fontmenu.Append(wx.ID_ANY,'Italic\tCtrl+I','Italic',wx.ITEM_CHECK)
+        self.underlinei = fontmenu.Append(wx.ID_ANY,'Underline\tCtrl+U','Underline',wx.ITEM_CHECK)
         uppercasei = fontmenu.Append(wx.ID_ANY,'Upper Case','Upper Case')
         lowercasei = fontmenu.Append(wx.ID_ANY,'Lower Case','Lower Case')
 
@@ -145,6 +150,9 @@ class WxEditor(wx.Frame):
         self.Bind(wx.EVT_MENU, self.show_hide_linenumber, self.linenumberi)
         self.Bind(wx.EVT_MENU, self.show_hide_statusbar, self.statusbari)
 
+        self.Bind(wx.EVT_MENU, self.bold, self.boldi)
+        self.Bind(wx.EVT_MENU, self.italic, self.italici)
+        self.Bind(wx.EVT_MENU, self.underline, self.underlinei)
         self.Bind(wx.EVT_MENU, self.uppercase, uppercasei)
         self.Bind(wx.EVT_MENU, self.lowercase, lowercasei)
 
@@ -168,8 +176,8 @@ class WxEditor(wx.Frame):
         comboBox_1 = wx.ComboBox(sizer_panel,wx.ID_ANY,"",wx.DefaultPosition,wx.DefaultSize,fonts,wx.CB_READONLY)
         comboBox_2 = wx.ComboBox(sizer_panel,wx.ID_ANY,"",wx.DefaultPosition,wx.DefaultSize,font_sizes,wx.CB_READONLY)
 
-        comboBox_1.Select(7)
-        comboBox_2.Select(0)
+        comboBox_1.Select(2)
+        comboBox_2.Select(2)
 
         comboBox_1.SetMinSize(wx.Size(150,-1))
         comboBox_2.SetMinSize(wx.Size(150,-1))
@@ -219,6 +227,10 @@ class WxEditor(wx.Frame):
 
         # Hide horizontal scrollbar
         self.Text.SetUseHorizontalScrollBar(show=0) 
+
+        # set default font & font size
+        font = wx.Font(12, wx.FONTFAMILY_TELETYPE, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL,False,'Consolas')
+        self.Text.StyleSetFont(0,font)
 
         # creating line number
         self.Text.SetMarginType(1,stc.STC_MARGIN_NUMBER)
@@ -387,7 +399,6 @@ class WxEditor(wx.Frame):
         self.pos = 0    
 
     def replace_button(self,e):
-        self.txt = self.Text.GetValue()
         self.data = wx.FindReplaceData()
         dlg = wx.FindReplaceDialog(self.Text,self.data,'Find & Replace',style=wx.FR_REPLACEDIALOG)
         dlg.Show()    
@@ -447,6 +458,30 @@ class WxEditor(wx.Frame):
             self.status(self)
         else:
             self.StatusBar.Destroy()    
+
+    def bold(self,e):
+        if self.boldi.IsChecked():
+            font = wx.Font(12,wx.FONTFAMILY_TELETYPE,wx.FONTSTYLE_NORMAL,wx.FONTWEIGHT_BOLD,False,'Consolas')
+            self.Text.StyleSetFont(0,font)
+        else:
+            font = wx.Font(12,wx.FONTFAMILY_TELETYPE,wx.FONTSTYLE_NORMAL,wx.FONTWEIGHT_NORMAL,False,'Consolas')
+            self.Text.StyleSetFont(0,font)    
+
+    def italic(self,e):
+        if self.italici.IsChecked():
+            font = wx.Font(12,wx.FONTFAMILY_TELETYPE,wx.FONTSTYLE_ITALIC,wx.FONTWEIGHT_NORMAL,False,'Consolas')
+            self.Text.StyleSetFont(0,font)
+        else:
+            font = wx.Font(12,wx.FONTFAMILY_TELETYPE,wx.FONTSTYLE_NORMAL,wx.FONTWEIGHT_NORMAL,False,'Consolas')
+            self.Text.StyleSetFont(0,font)    
+
+    def underline(self,e):
+        if self.underlinei.IsChecked():
+            font = wx.Font(12,wx.FONTFAMILY_TELETYPE,wx.FONTSTYLE_NORMAL,wx.FONTWEIGHT_NORMAL,True,'Consolas')
+            self.Text.StyleSetFont(0,font)
+        else:
+            font = wx.Font(12,wx.FONTFAMILY_TELETYPE,wx.FONTSTYLE_NORMAL,wx.FONTWEIGHT_NORMAL,False,'Consolas')
+            self.Text.StyleSetFont(0,font)    
 
     def uppercase(self,e):
         self.Text.UpperCase()        
