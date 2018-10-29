@@ -105,9 +105,19 @@ class WxEditor(wx.Frame):
         fontmenu = wx.Menu()
         menubar.Append(fontmenu,'Font')
 
-        self.boldi = fontmenu.Append(wx.ID_ANY,'Bold\tCtrl+B','Bold',wx.ITEM_CHECK)
-        self.italici = fontmenu.Append(wx.ID_ANY,'Italic\tCtrl+I','Italic',wx.ITEM_CHECK)
-        self.underlinei = fontmenu.Append(wx.ID_ANY,'Underline\tCtrl+U','Underline',wx.ITEM_CHECK)
+        boldi = wx.MenuItem(fontmenu,15,'Bold\tCtrl+B','Bold')
+        boldi.SetBitmap(wx.Bitmap('menuicons/bold.png'))
+        fontmenu.Append(boldi)
+
+        italici = wx.MenuItem(fontmenu,16,'Italic\tCtrl+I','Italic')
+        italici.SetBitmap(wx.Bitmap('menuicons/italic.png'))
+        fontmenu.Append(italici)
+        
+        underlinei = wx.MenuItem(fontmenu,17,'Underline\tCtrl+U','Underline')
+        underlinei.SetBitmap(wx.Bitmap('menuicons/underline.png'))
+        fontmenu.Append(underlinei)
+
+        fontmenu.AppendSeparator()
         uppercasei = fontmenu.Append(wx.ID_ANY,'Upper Case','Upper Case')
         lowercasei = fontmenu.Append(wx.ID_ANY,'Lower Case','Lower Case')
 
@@ -123,6 +133,11 @@ class WxEditor(wx.Frame):
 
         # show and hide line number
         self.linenumberEnable = True
+
+        # Set True value for bold, italic, underline
+        self.EnableBold = True
+        self.EnableItalic = True
+        self.EnableUnderline = True
 
         # bind menu icons and functions
         self.Bind(wx.EVT_MENU, self.new, newi)
@@ -150,9 +165,9 @@ class WxEditor(wx.Frame):
         self.Bind(wx.EVT_MENU, self.show_hide_linenumber, self.linenumberi)
         self.Bind(wx.EVT_MENU, self.show_hide_statusbar, self.statusbari)
 
-        self.Bind(wx.EVT_MENU, self.bold, self.boldi)
-        self.Bind(wx.EVT_MENU, self.italic, self.italici)
-        self.Bind(wx.EVT_MENU, self.underline, self.underlinei)
+        self.Bind(wx.EVT_MENU, self.bold, boldi)
+        self.Bind(wx.EVT_MENU, self.italic, italici)
+        self.Bind(wx.EVT_MENU, self.underline, underlinei)
         self.Bind(wx.EVT_MENU, self.uppercase, uppercasei)
         self.Bind(wx.EVT_MENU, self.lowercase, lowercasei)
 
@@ -460,28 +475,28 @@ class WxEditor(wx.Frame):
             self.StatusBar.Destroy()    
 
     def bold(self,e):
-        if self.boldi.IsChecked():
-            font = wx.Font(12,wx.FONTFAMILY_TELETYPE,wx.FONTSTYLE_NORMAL,wx.FONTWEIGHT_BOLD,False,'Consolas')
-            self.Text.StyleSetFont(0,font)
-        else:
-            font = wx.Font(12,wx.FONTFAMILY_TELETYPE,wx.FONTSTYLE_NORMAL,wx.FONTWEIGHT_NORMAL,False,'Consolas')
-            self.Text.StyleSetFont(0,font)    
+        if self.EnableBold:
+            self.Text.StyleSetBold(0,True)
+            self.EnableBold = False
+        elif not self.EnableBold:
+            self.Text.StyleSetBold(0,False)
+            self.EnableBold = True    
 
     def italic(self,e):
-        if self.italici.IsChecked():
-            font = wx.Font(12,wx.FONTFAMILY_TELETYPE,wx.FONTSTYLE_ITALIC,wx.FONTWEIGHT_NORMAL,False,'Consolas')
-            self.Text.StyleSetFont(0,font)
-        else:
-            font = wx.Font(12,wx.FONTFAMILY_TELETYPE,wx.FONTSTYLE_NORMAL,wx.FONTWEIGHT_NORMAL,False,'Consolas')
-            self.Text.StyleSetFont(0,font)    
+        if self.EnableItalic:
+            self.Text.StyleSetItalic(0,True)
+            self.EnableItalic = False
+        elif not self.EnableItalic:
+            self.Text.StyleSetItalic(0,False) 
+            self.EnableItalic = True       
 
     def underline(self,e):
-        if self.underlinei.IsChecked():
-            font = wx.Font(12,wx.FONTFAMILY_TELETYPE,wx.FONTSTYLE_NORMAL,wx.FONTWEIGHT_NORMAL,True,'Consolas')
-            self.Text.StyleSetFont(0,font)
-        else:
-            font = wx.Font(12,wx.FONTFAMILY_TELETYPE,wx.FONTSTYLE_NORMAL,wx.FONTWEIGHT_NORMAL,False,'Consolas')
-            self.Text.StyleSetFont(0,font)    
+        if self.EnableUnderline:
+            self.Text.StyleSetUnderline(0,True)
+            self.EnableUnderline = False
+        elif not self.EnableUnderline:
+            self.Text.StyleSetUnderline(0,False)
+            self.EnableUnderline = True        
 
     def uppercase(self,e):
         self.Text.UpperCase()        
