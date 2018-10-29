@@ -121,6 +121,21 @@ class WxEditor(wx.Frame):
         uppercasei = fontmenu.Append(wx.ID_ANY,'Upper Case','Upper Case')
         lowercasei = fontmenu.Append(wx.ID_ANY,'Lower Case','Lower Case')
 
+        fontsi = wx.Menu()
+        ariali = fontsi.Append(wx.ID_ANY,'Arial')
+        courier_newi = fontsi.Append(wx.ID_ANY,'Courier New')
+        consolasi = fontsi.Append(wx.ID_ANY,'Consolas')
+        clarendoni = fontsi.Append(wx.ID_ANY,'Clarendon')
+        comic_sansi = fontsi.Append(wx.ID_ANY,'Comic Sans Ms')
+        ms_sansi = fontsi.Append(wx.ID_ANY,'MS Sans Serif')
+        ms_serifi = fontsi.Append(wx.ID_ANY,'MS Serif')
+        timesi = fontsi.Append(wx.ID_ANY,'Times New Roman')
+        serifi = fontsi.Append(wx.ID_ANY,'Serif')
+        symboli = fontsi.Append(wx.ID_ANY,'Symbol')
+        systemi = fontsi.Append(wx.ID_ANY,'System')
+        verdanai = fontsi.Append(wx.ID_ANY,'Verdana')
+        fontmenu.Append(wx.ID_ANY,'Fonts',fontsi)
+
         self.SetMenuBar(menubar)
 
         # current directory and file name
@@ -170,6 +185,18 @@ class WxEditor(wx.Frame):
         self.Bind(wx.EVT_MENU, self.underline, underlinei)
         self.Bind(wx.EVT_MENU, self.uppercase, uppercasei)
         self.Bind(wx.EVT_MENU, self.lowercase, lowercasei)
+        self.Bind(wx.EVT_MENU, self.arial, ariali)
+        self.Bind(wx.EVT_MENU, self.courier_new, courier_newi)
+        self.Bind(wx.EVT_MENU, self.consolas, consolasi)
+        self.Bind(wx.EVT_MENU, self.clarendon, clarendoni)
+        self.Bind(wx.EVT_MENU, self.comic_sans, comic_sansi)
+        self.Bind(wx.EVT_MENU, self.ms_sans, ms_sansi)
+        self.Bind(wx.EVT_MENU, self.ms_serif, ms_serifi)
+        self.Bind(wx.EVT_MENU, self.times, timesi)
+        self.Bind(wx.EVT_MENU, self.serif, serifi)
+        self.Bind(wx.EVT_MENU, self.symbol, symboli)
+        self.Bind(wx.EVT_MENU, self.system, systemi)
+        self.Bind(wx.EVT_MENU, self.verdana, verdanai)
 
         # creating ribbon toolbar
         self.ribbon = RB.RibbonBar(self, wx.ID_ANY)
@@ -503,6 +530,42 @@ class WxEditor(wx.Frame):
 
     def lowercase(self,e):
         self.Text.LowerCase()
+
+    def arial(self,e):
+        self.Text.StyleSetFaceName(0,'Arial')    
+
+    def courier_new(self,e):
+        self.Text.StyleSetFaceName(0,'Courier New')
+
+    def consolas(self,e):
+        self.Text.StyleSetFaceName(0,'Consolas')      
+
+    def clarendon(self,e):
+        self.Text.StyleSetFaceName(0,'Clarendon')    
+
+    def comic_sans(self,e):
+        self.Text.StyleSetFaceName(0,'Comic Sans Ms')
+
+    def ms_sans(self,e):
+        self.Text.StyleSetFaceName(0,'MS Sans Serif')
+
+    def ms_serif(self,e):
+        self.Text.StyleSetFaceName(0,'MS Serif')    
+
+    def times(self,e):
+        self.Text.StyleSetFaceName(0,'Times New Roman')
+
+    def serif(self,e):
+        self.Text.StyleSetFaceName(0,'Serif')
+
+    def symbol(self,e):
+        self.Text.StyleSetFaceName(0,'Symbol')    
+
+    def system(self,e):
+        self.Text.StyleSetFaceName(0,'System')
+
+    def verdana(self,e):
+        self.Text.StyleSetFaceName(0,'Verdana')                 
 
     def status(self, e):
         line = self.Text.GetCurrentLine()+1
