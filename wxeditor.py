@@ -215,18 +215,18 @@ class WxEditor(wx.Frame):
 
         sizer_panel = RB.RibbonPanel(home,wx.ID_ANY,"Font Sizer")
 
-        comboBox_1 = wx.ComboBox(sizer_panel,wx.ID_ANY,"",wx.DefaultPosition,wx.DefaultSize,fonts,wx.CB_READONLY)
-        comboBox_2 = wx.ComboBox(sizer_panel,wx.ID_ANY,"",wx.DefaultPosition,wx.DefaultSize,font_sizes,wx.CB_READONLY)
+        self.comboBox_1 = wx.ComboBox(sizer_panel,wx.ID_ANY,"",wx.DefaultPosition,wx.DefaultSize,fonts,wx.CB_READONLY)
+        self.comboBox_2 = wx.ComboBox(sizer_panel,wx.ID_ANY,"",wx.DefaultPosition,wx.DefaultSize,font_sizes,wx.CB_READONLY)
 
-        comboBox_1.Select(2)
-        comboBox_2.Select(2)
+        self.comboBox_1.Select(2)
+        self.comboBox_2.Select(2)
 
-        comboBox_1.SetMinSize(wx.Size(150,-1))
-        comboBox_2.SetMinSize(wx.Size(150,-1))
+        self.comboBox_1.SetMinSize(wx.Size(150,-1))
+        self.comboBox_2.SetMinSize(wx.Size(150,-1))
 
         combobox = wx.BoxSizer(wx.VERTICAL)
-        combobox.Add(comboBox_1,0,wx.ALL|wx.EXPAND,3)
-        combobox.Add(comboBox_2,0,wx.ALL|wx.EXPAND,3)
+        combobox.Add(self.comboBox_1,0,wx.ALL|wx.EXPAND,3)
+        combobox.Add(self.comboBox_2,0,wx.ALL|wx.EXPAND,3)
         sizer_panel.SetSizer(combobox)
 
         edit_panel = RB.RibbonPanel(home,wx.ID_ANY,"Edit",wx.NullBitmap,wx.DefaultPosition,wx.DefaultSize,RB.RIBBON_PANEL_DEFAULT_STYLE)
@@ -253,6 +253,9 @@ class WxEditor(wx.Frame):
         self.Bind(RB.EVT_RIBBONTOOLBAR_CLICKED, self.save, id=wx.ID_SAVE)
         self.Bind(RB.EVT_RIBBONTOOLBAR_CLICKED, self.save_as, id=wx.ID_SAVEAS)
         self.Bind(RB.EVT_RIBBONTOOLBAR_CLICKED, self.exit, id=wx.ID_EXIT)
+
+        self.comboBox_1.Bind(wx.EVT_COMBOBOX, self.combo_font)
+        self.comboBox_2.Bind(wx.EVT_COMBOBOX, self.combo_fontsize)
 
         self.Bind(RB.EVT_RIBBONTOOLBAR_CLICKED, self.undo, id=wx.ID_UNDO)
         self.Bind(RB.EVT_RIBBONTOOLBAR_CLICKED, self.redo, id=wx.ID_REDO)
@@ -566,6 +569,12 @@ class WxEditor(wx.Frame):
 
     def verdana(self,e):
         self.Text.StyleSetFaceName(0,'Verdana')                 
+
+    def combo_font(self,e):
+        self.Text.StyleSetFaceName(0,'%s' % (self.comboBox_1.GetValue()))
+
+    def combo_fontsize(self,e):
+        self.Text.StyleSetSize(0,int('%s' % (self.comboBox_2.GetValue())))    
 
     def status(self, e):
         line = self.Text.GetCurrentLine()+1
