@@ -118,8 +118,13 @@ class WxEditor(wx.Frame):
         fontmenu.Append(underlinei)
 
         fontmenu.AppendSeparator()
-        uppercasei = fontmenu.Append(wx.ID_ANY,'Upper Case','Upper Case')
-        lowercasei = fontmenu.Append(wx.ID_ANY,'Lower Case','Lower Case')
+        uppercasei = wx.MenuItem(fontmenu,18,'Upper Case','Upper Case')
+        uppercasei.SetBitmap(wx.Bitmap('menuicons/uppercase.png'))
+        fontmenu.Append(uppercasei)
+
+        lowercasei = wx.MenuItem(fontmenu,19,'Lower Case','Lower Case')
+        lowercasei.SetBitmap(wx.Bitmap('menuicons/lowercase.png'))
+        fontmenu.Append(lowercasei)
 
         fontsi = wx.Menu()
         ariali = fontsi.Append(wx.ID_ANY,'Arial')
@@ -240,6 +245,15 @@ class WxEditor(wx.Frame):
         ToolBar.AddButton(wx.ID_FIND,'Find',wx.Bitmap('toolicons/find.png'))
         ToolBar.AddButton(wx.ID_REPLACE,'Replace',wx.Bitmap('toolicons/replace.png'))
 
+        font_panel = RB.RibbonPanel(home,wx.ID_ANY,"Font",wx.NullBitmap,wx.DefaultPosition,wx.DefaultSize,RB.RIBBON_PANEL_DEFAULT_STYLE)
+        ToolBar = RB.RibbonButtonBar(font_panel, wx.ID_ANY)
+
+        ToolBar.AddButton(wx.ID_BOLD,'Bold',wx.Bitmap('toolicons/bold.png'))
+        ToolBar.AddButton(wx.ID_ITALIC,'Italic',wx.Bitmap('toolicons/italic.png'))
+        ToolBar.AddButton(wx.ID_UNDERLINE,'Underline',wx.Bitmap('toolicons/underline.png'))
+        ToolBar.AddButton(wx.ID_UP,'Uppercase',wx.Bitmap('toolicons/uppercase.png'))
+        ToolBar.AddButton(wx.ID_LOWEST,'Lowercase',wx.Bitmap('toolicons/lowercase.png'))        
+
         self.ribbon.Realize()
 
         # bind ribbon toolbar icons and functions
@@ -261,6 +275,12 @@ class WxEditor(wx.Frame):
         self.Bind(RB.EVT_RIBBONBUTTONBAR_CLICKED, self.delete, id=wx.ID_DELETE)
         self.Bind(RB.EVT_RIBBONBUTTONBAR_CLICKED, self.find_button, id=wx.ID_FIND)
         self.Bind(RB.EVT_RIBBONBUTTONBAR_CLICKED, self.replace_button, id=wx.ID_REPLACE)
+
+        self.Bind(RB.EVT_RIBBONBUTTONBAR_CLICKED, self.bold, id=wx.ID_BOLD)
+        self.Bind(RB.EVT_RIBBONBUTTONBAR_CLICKED, self.italic, id=wx.ID_ITALIC)
+        self.Bind(RB.EVT_RIBBONBUTTONBAR_CLICKED, self.underline, id=wx.ID_UNDERLINE)
+        self.Bind(RB.EVT_RIBBONBUTTONBAR_CLICKED, self.uppercase, id=wx.ID_UP)
+        self.Bind(RB.EVT_RIBBONBUTTONBAR_CLICKED, self.lowercase, id=wx.ID_LOWEST)
 
         # creating textarea
         self.Text = stc.StyledTextCtrl(self,style=wx.TE_MULTILINE|wx.TE_WORDWRAP)
