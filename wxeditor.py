@@ -1,5 +1,6 @@
 import wx
 import wx.stc as stc
+import wx.adv
 import wx.ribbon as RB
 import os, time
 
@@ -141,6 +142,10 @@ class WxEditor(wx.Frame):
         verdanai = fontsi.Append(wx.ID_ANY,'Verdana')
         fontmenu.Append(wx.ID_ANY,'Fonts',fontsi)
 
+        aboutmenu = wx.Menu()
+        menubar.Append(aboutmenu,'About')
+        abouti = aboutmenu.Append(wx.ID_ANY,'About WxEditor')
+
         self.SetMenuBar(menubar)
 
         # current directory and file name
@@ -202,6 +207,8 @@ class WxEditor(wx.Frame):
         self.Bind(wx.EVT_MENU, self.symbol, symboli)
         self.Bind(wx.EVT_MENU, self.system, systemi)
         self.Bind(wx.EVT_MENU, self.verdana, verdanai)
+
+        self.Bind(wx.EVT_MENU, self.about, abouti)
 
         # creating ribbon toolbar
         self.ribbon = RB.RibbonBar(self, wx.ID_ANY)
@@ -597,6 +604,27 @@ class WxEditor(wx.Frame):
         stat = "Line %s, Column %s" % (line, column)
         self.StatusBar.SetStatusText(stat,0)
  
+    def about(self,e):
+        description = """WxEditor is an advanced text editor for the window operating system. 
+Features include powerful built-in editor, advanced toolbar, line number, 
+file handling and more."""
+
+        licence = """WxEditor is free software; you can redistribute
+it and/or modify it under the terms of the GNU General Public License."""
+
+        info = wx.adv.AboutDialogInfo()
+
+        info.SetIcon(wx.Icon('icons/text-editor.png',wx.BITMAP_TYPE_PNG))
+        info.SetName('WxEditor')
+        info.SetVersion('1.0')
+        info.SetDescription(description)
+        info.SetCopyright('(C) 2018 - 2019 Karan Chaudhari')
+        info.SetLicence(licence)
+        info.AddDeveloper('Karan Chaudhari')
+        info.AddDocWriter('Karan Chaudhari')
+
+        wx.adv.AboutBox(info)
+
 def main():
     app = wx.App()
     wxeditor = WxEditor(None)
