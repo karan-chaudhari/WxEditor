@@ -328,6 +328,9 @@ class WxEditor(wx.Frame):
         self.Text.Bind(wx.EVT_KEY_UP,self.status)
         self.status(self)
 
+        # set the icon
+        self.SetIcons(wx.IconBundle('icons/text-editor.png',wx.BITMAP_TYPE_ANY))
+
     def new(self, e):
         self.dirname = ''
         self.filename = ''
